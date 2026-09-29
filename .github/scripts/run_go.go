@@ -1,9 +1,14 @@
 // Generic verification driver for a Go solution file.
 //
-// Go can't dynamically load a function with an arbitrary signature, so the
-// convention here is: the solution file (package main, no `func main`)
-// exports `func Solve(input map[string]any) any`, and this driver is
-// compiled together with it.
+// Go can't dynamically load a function with an arbitrary signature, and it
+// doesn't preserve parameter names in a compiled binary, so the convention
+// here is: the solution file (package main, no `func main`) exports
+// `func Solve(<params...>) <return>` using the problem's natural argument
+// types (e.g. `func Solve(nums []int, target int) []int`), and this driver
+// is compiled together with it. Each testcase's "input" object's keys must
+// be ordered to match Solve's parameter order — Go reflection can recover
+// parameter *types* via reflect, but not parameter *names*, so matching by
+// position is the only option.
 //
 // Usage:
 //
@@ -22,6 +27,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -33,8 +39,61 @@ import (
 )
 
 type testCase struct {
-	Input    map[string]any `json:"input"`
-	Expected any            `json:"expected"`
+	Input    json.RawMessage `json:"input"`
+	Expected any             `json:"expected"`
+}
+
+// orderedInputValues returns the raw JSON values of an "input" object in the
+// order their keys appear in the source. A decoded map wouldn't preserve
+// that order, and it's needed to line values up with Solve's parameters
+// positionally since Go can't recover parameter names via reflection.
+func orderedInputValues(raw json.RawMessage) ([]json.RawMessage, error) {
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	if tok, err := dec.Token(); err != nil {
+		return nil, err
+	} else if d, ok := tok.(json.Delim); !ok || d != '{' {
+		return nil, fmt.Errorf(`"input" must be a JSON object`)
+	}
+
+	var values []json.RawMessage
+	for dec.More() {
+		if _, err := dec.Token(); err != nil { // the key; value is decoded below
+			return nil, err
+		}
+		var v json.RawMessage
+		if err := dec.Decode(&v); err != nil {
+			return nil, err
+		}
+		values = append(values, v)
+	}
+	return values, nil
+}
+
+// callSolve builds Solve's arguments from an "input" object's raw values,
+// unmarshalling each one into the type Solve actually declares for that
+// position, then invokes it via reflection.
+func callSolve(rawInput json.RawMessage) (any, error) {
+	solveVal := reflect.ValueOf(Solve)
+	solveType := solveVal.Type()
+
+	argValues, err := orderedInputValues(rawInput)
+	if err != nil {
+		return nil, err
+	}
+	if len(argValues) != solveType.NumIn() {
+		return nil, fmt.Errorf("input has %d field(s), Solve expects %d argument(s)", len(argValues), solveType.NumIn())
+	}
+
+	args := make([]reflect.Value, solveType.NumIn())
+	for i := 0; i < solveType.NumIn(); i++ {
+		argPtr := reflect.New(solveType.In(i))
+		if err := json.Unmarshal(argValues[i], argPtr.Interface()); err != nil {
+			return nil, fmt.Errorf("arg %d: %w", i, err)
+		}
+		args[i] = argPtr.Elem()
+	}
+
+	return solveVal.Call(args)[0].Interface(), nil
 }
 
 // normalize round-trips a value through JSON so ints/floats/slices/maps end
@@ -78,7 +137,11 @@ func main() {
 
 	var failures []string
 	for i, tc := range cases {
-		actual := Solve(tc.Input)
+		actual, err := callSolve(tc.Input)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "case %d: %v\n", i, err)
+			os.Exit(2)
+		}
 		if !reflect.DeepEqual(normalize(actual), normalize(tc.Expected)) {
 			failures = append(failures, fmt.Sprintf("case %d: expected %v, got %v", i, tc.Expected, actual))
 		}
