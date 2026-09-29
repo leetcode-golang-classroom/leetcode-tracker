@@ -126,6 +126,6 @@ push 到 `main` 且改動了 `python/**`、`javascript/**`、`go/**`、`rust/**`
 ## 尚待你確認/填入的設定
 
 - 這個 repo 要 push 到哪個 GitHub repo（例如 `Egg-Village-Python-Workshop/leetcode-tracker`）。
-- org Project 的編號（`GH_PROJECT_NUMBER`），需要先在 GitHub 上手動建立好這個 Project 並加上八個自訂欄位（Topic / Difficulty / Status / Language / Order / Verified / Runtime (ms) / Memory (KB)，Iteration 欄位另外在 Project UI 設定週期）。
+- org Project 的編號（`GH_PROJECT_NUMBER`），需要先在 GitHub 上手動建立好這個 Project 並加上八個自訂欄位（Topic / Difficulty / Handle-Status / Language / Order / Verified / Runtime (ms) / Memory (KB)，Iteration 欄位另外在 Project UI 設定週期）。GitHub 內建的 `Status` 欄位名稱系統保留（無法改名/刪除），所以自訂的刷題狀態欄位要叫 `Handle-Status`，不要跟內建的 `Status` 搞混。
 - 是否要在本機先安裝 `gh` CLI（並 `gh auth refresh -s project` 取得 project 權限）與 `uv`，才能跑這些腳本。
 - 若要啟用 `seed-weekly.yml` 排程：`WEEK1_START_DATE` 定在哪一天、`PROJECT_PAT` secret 要不要現在就建。

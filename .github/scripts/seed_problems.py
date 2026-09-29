@@ -73,8 +73,8 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
         set_single_select(project_meta["id"], parent_item_id, fields["Topic"], problem["topic"])
     if "Difficulty" in fields:
         set_single_select(project_meta["id"], parent_item_id, fields["Difficulty"], problem["difficulty"])
-    if "Status" in fields:
-        set_single_select(project_meta["id"], parent_item_id, fields["Status"], "Backlog")
+    if "Handle-Status" in fields:
+        set_single_select(project_meta["id"], parent_item_id, fields["Handle-Status"], "Backlog")
     if "Order" in fields:
         set_number(project_meta["id"], parent_item_id, fields["Order"], float(problem["order"]))
     if "Week" in fields and fields["Week"].get("type") == "ProjectV2IterationField":
@@ -96,8 +96,8 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
         sub_item_id = add_item_to_project(project_owner, project_number, sub["url"])
         if "Language" in fields:
             set_single_select(project_meta["id"], sub_item_id, fields["Language"], lang)
-        if "Status" in fields:
-            set_single_select(project_meta["id"], sub_item_id, fields["Status"], "Backlog")
+        if "Handle-Status" in fields:
+            set_single_select(project_meta["id"], sub_item_id, fields["Handle-Status"], "Backlog")
         if "Verified" in fields:
             set_single_select(project_meta["id"], sub_item_id, fields["Verified"], "Unverified")
 
