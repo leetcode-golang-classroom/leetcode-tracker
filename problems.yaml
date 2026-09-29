@@ -1,0 +1,63 @@
+# 題目主清單（source of truth）。
+# 每一批（week）建議放 7 題，對應 Project 的 Iteration 週期。
+# topic 對應 NeetCode 的主題分類（見 README.md 的 topic 清單）。
+# id 是本專案自己的序號，用於 issue 標題 [NNNN]，跟 LeetCode 官方題號無關。
+#
+# 本檔案第一批（week 1）取自 NeetCode 150 的 "Arrays & Hashing" 分類，
+# 依官方順序取前 7 題（含 Two Sum）。
+
+- id: "0001"
+  title: "Contains Duplicate"
+  topic: arrays-hashing
+  difficulty: easy
+  order: 1
+  week: 1
+  source_url: https://leetcode.com/problems/contains-duplicate/
+
+- id: "0002"
+  title: "Valid Anagram"
+  topic: arrays-hashing
+  difficulty: easy
+  order: 2
+  week: 1
+  source_url: https://leetcode.com/problems/valid-anagram/
+
+- id: "0003"
+  title: "Two Sum"
+  topic: arrays-hashing
+  difficulty: easy
+  order: 3
+  week: 1
+  source_url: https://leetcode.com/problems/two-sum/
+
+- id: "0004"
+  title: "Group Anagrams"
+  topic: arrays-hashing
+  difficulty: medium
+  order: 4
+  week: 1
+  source_url: https://leetcode.com/problems/group-anagrams/
+
+- id: "0005"
+  title: "Top K Frequent Elements"
+  topic: arrays-hashing
+  difficulty: medium
+  order: 5
+  week: 1
+  source_url: https://leetcode.com/problems/top-k-frequent-elements/
+
+- id: "0006"
+  title: "Product of Array Except Self"
+  topic: arrays-hashing
+  difficulty: medium
+  order: 6
+  week: 1
+  source_url: https://leetcode.com/problems/product-of-array-except-self/
+
+- id: "0007"
+  title: "Valid Sudoku"
+  topic: arrays-hashing
+  difficulty: medium
+  order: 7
+  week: 1
+  source_url: https://leetcode.com/problems/valid-sudoku/

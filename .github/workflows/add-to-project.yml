@@ -1,0 +1,16 @@
+name: Add new issues to Project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          # 換成實際的 org Project URL，例如：
+          # https://github.com/orgs/Egg-Village-Python-Workshop/projects/1
+          project-url: https://github.com/orgs/CHANGE_ME/projects/CHANGE_ME
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}

@@ -1,0 +1,87 @@
+name: Verify changed solutions
+
+# Runs the matching language runner for every solution file touched by a
+# push, then calls record_result.py to write Verified/Runtime/Memory back
+# onto the sub-issue + leave a timestamped comment. This replaces running
+# record_result.py by hand — pushing a solution is enough to update the board.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "python/**"
+      - "javascript/**"
+      - "go/**"
+      - "rust/**"
+      - "java/**"
+      - "other/**"
+  workflow_dispatch:
+    inputs:
+      solution_path:
+        description: "Path to a single solution file to (re-)verify"
+        required: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: astral-sh/setup-uv@v3
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.25" }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Determine changed solution files
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            printf '%s\n' "${{ inputs.solution_path }}" > changed_files.txt
+          else
+            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" \
+              -- python javascript go rust java other > changed_files.txt
+          fi
+          cat changed_files.txt
+
+      - name: Verify + record each changed solution
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+          GH_REPO: ${{ github.repository }}
+          GH_PROJECT_OWNER: ${{ vars.GH_PROJECT_OWNER }}
+          GH_PROJECT_NUMBER: ${{ vars.GH_PROJECT_NUMBER }}
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/run_go.sh .github/scripts/run_rust.sh .github/scripts/run_java.sh
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [ -f "$file" ] || { echo "skip (deleted): $file"; continue; }
+
+            dir="${file%%/*}"
+            base="$(basename "$file")"
+            id="${base%%-*}"
+            rest="${base#*-}"
+            slug="${rest%.*}"
+            testcases="testcases/${id}-${slug}.json"
+
+            if [ ! -f "$testcases" ]; then
+              echo "skip (no testcases at $testcases): $file"
+              continue
+            fi
+
+            case "$dir" in
+              python)     lang=python; cmd=(uv run .github/scripts/run_python.py "$file" "$testcases") ;;
+              javascript) lang=javascript-typescript; cmd=(node .github/scripts/run_javascript.mjs "$file" "$testcases") ;;
+              go)         lang=go; cmd=(.github/scripts/run_go.sh "$file" "$testcases") ;;
+              rust)       lang=rust; cmd=(.github/scripts/run_rust.sh "$file" "$testcases") ;;
+              java)       lang=java; cmd=(.github/scripts/run_java.sh "$file" "$testcases") ;;
+              other)      echo "skip (no generic runner for other/ yet): $file"; continue ;;
+              *)          continue ;;
+            esac
+
+            echo "verifying $file ($lang)"
+            uv run .github/scripts/record_result.py "$id" "$lang" -- "${cmd[@]}"
+          done < changed_files.txt

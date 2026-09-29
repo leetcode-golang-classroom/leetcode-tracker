@@ -1,0 +1,40 @@
+name: "\U0001F9E9 解法 (Solution)"
+description: 新增某一題目在某個語言下的解法子 issue，記得手動掛到對應的 Problem 主幹 issue 下（GitHub 的 Sub-issues 功能）。
+title: "[NNNN][Lang] "
+labels:
+  - "type:solution"
+body:
+  - type: input
+    id: problem_id
+    attributes:
+      label: 對應的題目編號
+      description: 跟主幹 Problem issue 使用同一個編號，例如 0008
+      placeholder: "0008"
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - python
+        - javascript-typescript
+        - go
+        - rust
+        - java
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: 解法概要 / 複雜度
+    validations:
+      required: false
+  - type: input
+    id: code_path
+    attributes:
+      label: 程式碼路徑
+      placeholder: "python/arrays-hashing/0008-two-sum.py"
+    validations:
+      required: false

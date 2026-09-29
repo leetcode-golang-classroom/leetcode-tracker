@@ -1,0 +1,43 @@
+name: Seed this week's problems
+
+# problems.yaml is expected to hold several weeks of pre-curated problems in
+# advance (each row already tagged with its `week`). This workflow does NOT
+# invent problems — it just seeds whichever week is "due" on schedule, so
+# nothing new appears if you forget to top up problems.yaml ahead of time.
+on:
+  schedule:
+    - cron: "0 16 * * 0" # Sunday 16:00 UTC = Monday 00:00 Asia/Taipei
+  workflow_dispatch: {} # allows a manual catch-up run from the Actions tab
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - name: Compute current week number
+        id: week
+        run: |
+          start_date="${{ vars.WEEK1_START_DATE }}" # e.g. "2026-09-28", the Monday of week 1
+          if [ -z "$start_date" ]; then
+            echo "WEEK1_START_DATE repo variable is not set" >&2
+            exit 1
+          fi
+          today_epoch=$(date -u +%s)
+          start_epoch=$(date -u -d "$start_date" +%s)
+          days=$(( (today_epoch - start_epoch) / 86400 ))
+          week=$(( days / 7 + 1 ))
+          echo "current week is $week"
+          echo "week=$week" >> "$GITHUB_OUTPUT"
+
+      - name: Seed due problems into issues + Project
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }} # classic PAT with `repo` + `project` scopes
+          GH_REPO: ${{ github.repository }}
+          GH_PROJECT_OWNER: ${{ vars.GH_PROJECT_OWNER }}
+          GH_PROJECT_NUMBER: ${{ vars.GH_PROJECT_NUMBER }}
+          LANGUAGES: ${{ vars.LANGUAGES }} # e.g. "python" or "python,go"
+          MAX_WEEK: ${{ steps.week.outputs.week }}
+        run: uv run .github/scripts/seed_problems.py problems.yaml

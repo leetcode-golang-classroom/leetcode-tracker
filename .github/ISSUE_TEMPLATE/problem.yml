@@ -1,0 +1,62 @@
+name: "\U0001F4CC 題目 (Problem)"
+description: 新增一個語言無關的主幹題目 issue，之後各語言解法用 Solution 子 issue 掛在下面。
+title: "[NNNN] "
+labels:
+  - "type:problem"
+body:
+  - type: input
+    id: problem_id
+    attributes:
+      label: 題目編號
+      description: 本專案的序號，例如 0008（跟 LeetCode 官方題號無關）
+      placeholder: "0008"
+    validations:
+      required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - arrays-hashing
+        - two-pointers
+        - sliding-window
+        - stack
+        - binary-search
+        - linked-list
+        - trees
+        - tries
+        - heap-priority-queue
+        - backtracking
+        - graphs
+        - advanced-graphs
+        - dp-1d
+        - dp-2d
+        - greedy
+        - intervals
+        - math-geometry
+        - bit-manipulation
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - easy
+        - medium
+        - hard
+    validations:
+      required: true
+  - type: input
+    id: source_url
+    attributes:
+      label: 題目來源連結
+      placeholder: "https://leetcode.com/problems/two-sum/"
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: 題目描述 / 筆記
+    validations:
+      required: false
