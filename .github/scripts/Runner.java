@@ -2,11 +2,20 @@
 // JSON is hand-rolled into native Java types (Map/List/Double/String/Boolean).
 //
 // Convention: the solution file declares a package-private `class Solution`
-// with `static Object solve(Map<String, Object> input)`. Compiled together
-// with this driver by run_java.sh (which renames the solution file to
-// Solution.java first, since Java requires public-class-name == file-name
-// but is fine with non-public classes under any file name).
+// with `static <ret> solve(<params>)` using the problem's natural argument
+// types (e.g. `static int[] solve(int[] nums, int target)`). Compiled
+// together with this driver by run_java.sh (which renames the solution file
+// to Solution.java first, since Java requires public-class-name == file-name
+// but is fine with non-public classes under any file name, and adds
+// `-parameters` so parameter names survive into the class file). Runner
+// matches each testcase's "input" object keys to solve()'s parameters by
+// name via reflection, converting the hand-rolled JSON value into whatever
+// type that parameter actually declares.
 import java.util.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -137,6 +146,73 @@ public class Runner {
         return o; // String, Boolean
     }
 
+    // convert turns a hand-rolled-JSON value (Double/String/Boolean/List/Map/null)
+    // into whatever type a solve() parameter actually declares, recursing into
+    // List<T> element types since Java erases those at runtime otherwise.
+    @SuppressWarnings("unchecked")
+    static Object convert(Object value, Type type) {
+        if (value == null) return null;
+
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            Class<?> raw = (Class<?>) pt.getRawType();
+            if (List.class.isAssignableFrom(raw)) {
+                Type elemType = pt.getActualTypeArguments()[0];
+                List<Object> out = new ArrayList<>();
+                for (Object v : (List<Object>) value) out.add(convert(v, elemType));
+                return out;
+            }
+            return value;
+        }
+
+        Class<?> cls = (Class<?>) type;
+        if (cls == int.class || cls == Integer.class) return ((Number) value).intValue();
+        if (cls == long.class || cls == Long.class) return ((Number) value).longValue();
+        if (cls == double.class || cls == Double.class) return ((Number) value).doubleValue();
+        if (cls == float.class || cls == Float.class) return ((Number) value).floatValue();
+        if (cls == boolean.class || cls == Boolean.class) return value;
+        if (cls == String.class) return value;
+        if (cls == char.class || cls == Character.class) return ((String) value).charAt(0);
+
+        if (cls.isArray()) {
+            List<Object> list = (List<Object>) value;
+            Class<?> elemCls = cls.getComponentType();
+            Object arr = java.lang.reflect.Array.newInstance(elemCls, list.size());
+            for (int i = 0; i < list.size(); i++) {
+                java.lang.reflect.Array.set(arr, i, convert(list.get(i), elemCls));
+            }
+            return arr;
+        }
+
+        return value; // raw List/Map fallback
+    }
+
+    static Method findSolveMethod() {
+        for (Method m : Solution.class.getDeclaredMethods()) {
+            if (m.getName().equals("solve")) {
+                m.setAccessible(true);
+                return m;
+            }
+        }
+        throw new RuntimeException("Solution has no solve(...) method");
+    }
+
+    static Object invokeSolve(Method solveMethod, Map<String, Object> input) throws Exception {
+        Parameter[] params = solveMethod.getParameters();
+        Object[] args = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            if (!params[i].isNamePresent()) {
+                throw new RuntimeException("parameter names not available - was Solution.java compiled with -parameters?");
+            }
+            String name = params[i].getName();
+            if (!input.containsKey(name)) {
+                throw new RuntimeException("testcase input has no field \"" + name + "\" for solve()'s parameter of that name");
+            }
+            args[i] = convert(input.get(name), params[i].getParameterizedType());
+        }
+        return solveMethod.invoke(null, args);
+    }
+
     static String toJson(Object o) {
         if (o == null) return "null";
         if (o instanceof String) return "\"" + ((String) o).replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
@@ -182,12 +258,13 @@ public class Runner {
         long memBefore = rt.totalMemory() - rt.freeMemory();
         long start = System.nanoTime();
 
+        Method solveMethod = findSolveMethod();
         List<String> failures = new ArrayList<>();
         for (int i = 0; i < cases.size(); i++) {
             Map<String, Object> testCase = (Map<String, Object>) cases.get(i);
             Map<String, Object> input = (Map<String, Object>) testCase.get("input");
             Object expected = normalize(testCase.get("expected"));
-            Object actual = normalize(Solution.solve(input));
+            Object actual = normalize(invokeSolve(solveMethod, input));
             if (!Objects.equals(actual, expected)) {
                 failures.add("case " + i + ": expected " + toJson(expected) + ", got " + toJson(actual));
             }
