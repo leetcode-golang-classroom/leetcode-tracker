@@ -6,7 +6,7 @@ name: Verify changed solutions
 # record_result.py by hand — pushing a solution is enough to update the board.
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "python/**"
       - "javascript/**"

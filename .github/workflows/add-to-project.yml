@@ -13,4 +13,4 @@ jobs:
           # 換成實際的 org Project URL，例如：
           # https://github.com/orgs/Egg-Village-Python-Workshop/projects/1
           project-url: https://github.com/orgs/leetcode-golang-classroom/projects/3
-          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          github-token: ${{ secrets.PROJECT_PAT }}
