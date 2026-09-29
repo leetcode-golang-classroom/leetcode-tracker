@@ -59,17 +59,50 @@ def add_sub_issue(parent_node_id: str, sub_node_id: str) -> None:
         raise
 
 
+_ITERATION_QUERY = """
+query($id: ID!) {
+  node(id: $id) {
+    ... on ProjectV2IterationField {
+      configuration {
+        completedIterations { id title startDate duration }
+        iterations { id title startDate duration }
+      }
+    }
+  }
+}
+"""
+
+
 def get_project_meta(owner: str, number: str) -> dict:
     out = run(["gh", "project", "view", number, "--owner", owner, "--format", "json"])
     project = json.loads(out)
     fields_out = run(["gh", "project", "field-list", number, "--owner", owner, "--format", "json"])
     fields = json.loads(fields_out)["fields"]
+    # `gh project field-list` doesn't return iteration details for
+    # ProjectV2IterationField, so fetch those separately via GraphQL.
+    for field in fields:
+        if field.get("type") == "ProjectV2IterationField":
+            config = run_graphql(_ITERATION_QUERY, id=field["id"])["data"]["node"]["configuration"]
+            field["iterations"] = config["completedIterations"] + config["iterations"]
     return {"id": project["id"], "fields": {f["name"]: f for f in fields}}
 
 
 def add_item_to_project(owner: str, number: str, issue_url: str) -> str:
-    out = run(["gh", "project", "item-add", number, "--owner", owner, "--url", issue_url, "--format", "json"])
-    return json.loads(out)["id"]
+    # The `add-to-project.yml` workflow (triggered on `issues: opened`) may race
+    # with this call and add the issue to the project first, so `item-add` can
+    # fail with "already exists" even though we never added it ourselves here.
+    # Fall back to looking up the existing item instead of crashing.
+    try:
+        out = run(["gh", "project", "item-add", number, "--owner", owner, "--url", issue_url, "--format", "json"])
+        return json.loads(out)["id"]
+    except RuntimeError as exc:
+        if "already exists in this project" not in str(exc).lower():
+            raise
+    out = run(["gh", "project", "item-list", number, "--owner", owner, "--format", "json", "--limit", "500"])
+    for item in json.loads(out)["items"]:
+        if item.get("content", {}).get("url") == issue_url:
+            return item["id"]
+    raise RuntimeError(f"item reported as already in project but not found via item-list: {issue_url}")
 
 
 def set_single_select(project_id: str, item_id: str, field: dict, option_name: str) -> None:
