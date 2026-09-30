@@ -58,6 +58,7 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
     print(f"Problem {parent_title}")
 
     existing = find_issue(repo, title_token)
+    parent_is_new = existing is None
     if existing:
         print("  parent exists, reusing")
         parent = existing
@@ -73,7 +74,9 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
         set_single_select(project_meta["id"], parent_item_id, fields["Topic"], problem["topic"])
     if "Difficulty" in fields:
         set_single_select(project_meta["id"], parent_item_id, fields["Difficulty"], problem["difficulty"])
-    if "Handle-Status" in fields:
+    # Only seed initial state on new issues: re-running the seed must not
+    # clobber progress (Handle-Status) already recorded on existing items.
+    if parent_is_new and "Handle-Status" in fields:
         set_single_select(project_meta["id"], parent_item_id, fields["Handle-Status"], "Backlog")
     if "Order" in fields:
         set_number(project_meta["id"], parent_item_id, fields["Order"], float(problem["order"]))
@@ -84,6 +87,7 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
         sub_title_token = f"[{pid}][{lang}]"
         sub_title = f"[{pid}][{lang}] {problem['title']}"
         existing_sub = find_issue(repo, sub_title_token)
+        sub_is_new = existing_sub is None
         if existing_sub:
             print(f"  sub-issue ({lang}) exists, reusing")
             sub = existing_sub
@@ -96,9 +100,11 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
         sub_item_id = add_item_to_project(project_owner, project_number, sub["url"])
         if "Language" in fields:
             set_single_select(project_meta["id"], sub_item_id, fields["Language"], lang)
-        if "Handle-Status" in fields:
+        # Don't reset Verified/Handle-Status on existing sub-issues, or a
+        # re-seed wipes results recorded by record_result.py.
+        if sub_is_new and "Handle-Status" in fields:
             set_single_select(project_meta["id"], sub_item_id, fields["Handle-Status"], "Backlog")
-        if "Verified" in fields:
+        if sub_is_new and "Verified" in fields:
             set_single_select(project_meta["id"], sub_item_id, fields["Verified"], "Unverified")
 
 
