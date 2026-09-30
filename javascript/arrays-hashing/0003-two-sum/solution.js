@@ -1,4 +1,4 @@
-function solve({nums=[], target}) {
+function solve({ nums = [], target }) {
   const length = nums.length;
   const visited = new Map();
   for (let idx = 0; idx < length; idx++) {
@@ -15,4 +15,4 @@ function solve({nums=[], target}) {
   return [];
 }
 
-module.exports = {solve};
+module.exports = { solve };

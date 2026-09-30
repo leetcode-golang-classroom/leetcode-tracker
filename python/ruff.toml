@@ -1,0 +1,5 @@
+line-length = 100
+
+[lint]
+# Errors, pyflakes, import order, bugbear, pyupgrade. Style rules stay off on purpose.
+select = ["E", "F", "I", "B", "UP"]
