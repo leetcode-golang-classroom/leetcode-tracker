@@ -61,11 +61,20 @@ jobs:
             [ -z "$file" ] && continue
             [ -f "$file" ] || { echo "skip (deleted): $file"; continue; }
 
+            if grep -q 'TODO(scaffold)' "$file"; then
+              echo "skip (unimplemented scaffold stub): $file"
+              continue
+            fi
+
+            case "$(basename "$file")" in
+              solution.*) ;;
+              *) echo "skip (not a solution file): $file"; continue ;;
+            esac
+
             dir="${file%%/*}"
-            base="$(basename "$file")"
-            id="${base%%-*}"
-            rest="${base#*-}"
-            slug="${rest%.*}"
+            stem="$(basename "$(dirname "$file")")" # <NNNN>-<slug>
+            id="${stem%%-*}"
+            slug="${stem#*-}"
             testcases="testcases/${id}-${slug}.json"
 
             if [ ! -f "$testcases" ]; then

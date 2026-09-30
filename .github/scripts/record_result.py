@@ -17,7 +17,7 @@ Usage:
 
 Example:
   uv run .github/scripts/record_result.py 0003 python -- \\
-      uv run .github/scripts/run_python.py python/arrays-hashing/0003-two-sum.py testcases/0003-two-sum.json
+      uv run .github/scripts/run_python.py python/arrays-hashing/0003-two-sum/solution.py testcases/0003-two-sum.json
 
 The runner command must print one JSON line as its *last* line of stdout:
   {"status": "passed"|"failed", "runtime_ms": <float>, "memory_kb": <float>, "details": "..."}
