@@ -1,16 +1,18 @@
 function solve({nums=[], target}) {
-  const len = nums.length;
-  result = []
-  const map = new Map();
-  for (let i = 0; i < len; i++) {
-    const want = target - nums[i];
-    const idx = map[want];
-    if (idx != undefined) {
-      return (idx > i)? [i, idx]: [idx, i]
+  const length = nums.length;
+  const visited = new Map();
+  for (let idx = 0; idx < length; idx++) {
+    // check target - nums[idx] exists in visited map
+    const matchedValue = target - nums[idx];
+    const matchedIdx = visited.get(matchedValue);
+    if (matchedIdx !== undefined) {
+      return [matchedIdx, idx];
     }
-    map[nums[i]] = i 
+
+    // setup current value to visited map
+    visited.set(nums[idx], idx);
   }
-  return result
+  return [];
 }
 
-module.exports = {solve}
+module.exports = {solve};
