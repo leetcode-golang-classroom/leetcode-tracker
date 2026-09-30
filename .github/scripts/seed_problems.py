@@ -30,6 +30,7 @@ import sys
 
 import yaml
 
+from scaffold import problem_dir, solution_path
 from gh_project_lib import (
     add_item_to_project,
     add_sub_issue,
@@ -49,6 +50,18 @@ LANGUAGE_LABELS = {
     "java": "lang:java",
     "other": "lang:other",
 }
+
+
+def sub_issue_body(repo: str, problem: dict, lang: str) -> str:
+    folder = problem_dir(problem, lang)
+    if folder is None:
+        return f"Source: {problem.get('source_url', '')}"
+    return (
+        f"Source: {problem.get('source_url', '')}\n\n"
+        f"- 題目說明與範例測資：[{folder}/README.md](https://github.com/{repo}/blob/master/{folder}/README.md)\n"
+        f"- 解法檔：`{solution_path(problem, lang)}`\n"
+        f"- 作題流程：[docs/WORKFLOW.md](https://github.com/{repo}/blob/master/docs/WORKFLOW.md)\n"
+    )
 
 
 def seed_problem(repo: str, project_owner: str, project_number: str, project_meta: dict, problem: dict, languages: list[str]) -> None:
@@ -93,7 +106,7 @@ def seed_problem(repo: str, project_owner: str, project_number: str, project_met
             sub = existing_sub
         else:
             labels = ["type:solution", LANGUAGE_LABELS[lang]]
-            sub = create_issue(repo, sub_title, "", labels)
+            sub = create_issue(repo, sub_title, sub_issue_body(repo, problem, lang), labels)
             print(f"  created sub-issue #{sub['number']} ({lang})")
             add_sub_issue(parent["id"], sub["id"])
 

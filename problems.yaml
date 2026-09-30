@@ -13,6 +13,18 @@
   order: 1
   week: 1
   source_url: https://leetcode.com/problems/contains-duplicate/
+  signature:
+    params: [{name: nums, type: "int[]"}]
+    returns: bool
+  description: |
+    給定整數陣列 nums，若有任何數值出現至少兩次則回傳 true，否則回傳 false。
+  constraints:
+    - "1 <= nums.length <= 10^5"
+    - "-10^9 <= nums[i] <= 10^9"
+  examples:
+    - {input: {nums: [1, 2, 3, 1]}, expected: true}
+    - {input: {nums: [1, 2, 3, 4]}, expected: false}
+    - {input: {nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]}, expected: true}
 
 - id: "0002"
   title: "Valid Anagram"
@@ -21,6 +33,17 @@
   order: 2
   week: 1
   source_url: https://leetcode.com/problems/valid-anagram/
+  signature:
+    params: [{name: s, type: string}, {name: t, type: string}]
+    returns: bool
+  description: |
+    給定兩個字串 s 與 t，若 t 是 s 的重新排列（每個字元出現次數相同）則回傳 true，否則回傳 false。
+  constraints:
+    - "1 <= s.length, t.length <= 5 * 10^4"
+    - "s 與 t 只包含小寫英文字母"
+  examples:
+    - {input: {s: "anagram", t: "nagaram"}, expected: true}
+    - {input: {s: "rat", t: "car"}, expected: false}
 
 - id: "0003"
   title: "Two Sum"
@@ -29,6 +52,18 @@
   order: 3
   week: 1
   source_url: https://leetcode.com/problems/two-sum/
+  signature:
+    params: [{name: nums, type: "int[]"}, {name: target, type: int}]
+    returns: "int[]"
+  description: |
+    給定整數陣列 nums 與整數 target，回傳兩個相加等於 target 的元素的索引 [i, j]（i < j）。保證恰有一組解，且同一個元素不可重複使用。
+  constraints:
+    - "2 <= nums.length <= 10^4"
+    - "-10^9 <= nums[i], target <= 10^9"
+  examples:
+    - {input: {nums: [2, 7, 11, 15], target: 9}, expected: [0, 1]}
+    - {input: {nums: [3, 2, 4], target: 6}, expected: [1, 2]}
+    - {input: {nums: [3, 3], target: 6}, expected: [0, 1]}
 
 - id: "0004"
   title: "Group Anagrams"
@@ -37,6 +72,19 @@
   order: 4
   week: 1
   source_url: https://leetcode.com/problems/group-anagrams/
+  signature:
+    params: [{name: strs, type: "string[]"}]
+    returns: "string[][]"
+  description: |
+    給定字串陣列 strs，把彼此是 anagram 的字串分成同一組。
+    **本 repo 的輸出約定**（runner 以完全相等比較）：每組內的字串依字典序排序，各組再依「組內第一個字串」的字典序排序。
+  constraints:
+    - "1 <= strs.length <= 10^4"
+    - "0 <= strs[i].length <= 100，只包含小寫英文字母"
+  examples:
+    - {input: {strs: ["eat", "tea", "tan", "ate", "nat", "bat"]}, expected: [["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]}
+    - {input: {strs: [""]}, expected: [[""]]}
+    - {input: {strs: ["a"]}, expected: [["a"]]}
 
 - id: "0005"
   title: "Top K Frequent Elements"
@@ -45,6 +93,19 @@
   order: 5
   week: 1
   source_url: https://leetcode.com/problems/top-k-frequent-elements/
+  signature:
+    params: [{name: nums, type: "int[]"}, {name: k, type: int}]
+    returns: "int[]"
+  description: |
+    給定整數陣列 nums 與整數 k，回傳出現頻率最高的 k 個元素。
+    **本 repo 的輸出約定**：回傳值由小到大排序（且測資保證答案唯一）。
+  constraints:
+    - "1 <= nums.length <= 10^5"
+    - "k 介於 1 與不同元素個數之間"
+  examples:
+    - {input: {nums: [1, 1, 1, 2, 2, 3], k: 2}, expected: [1, 2]}
+    - {input: {nums: [1], k: 1}, expected: [1]}
+    - {input: {nums: [4, 4, 4, 5, 5, 6, 6, 6, 6], k: 1}, expected: [6]}
 
 - id: "0006"
   title: "Product of Array Except Self"
@@ -53,6 +114,17 @@
   order: 6
   week: 1
   source_url: https://leetcode.com/problems/product-of-array-except-self/
+  signature:
+    params: [{name: nums, type: "int[]"}]
+    returns: "int[]"
+  description: |
+    給定整數陣列 nums，回傳陣列 answer，其中 answer[i] 等於 nums 中除了 nums[i] 以外所有元素的乘積。要求 O(n) 時間且不使用除法。
+  constraints:
+    - "2 <= nums.length <= 10^5"
+    - "-30 <= nums[i] <= 30，任何前綴／後綴乘積都能放進 32 位元整數"
+  examples:
+    - {input: {nums: [1, 2, 3, 4]}, expected: [24, 12, 8, 6]}
+    - {input: {nums: [-1, 1, 0, -3, 3]}, expected: [0, 0, 9, 0, 0]}
 
 - id: "0007"
   title: "Valid Sudoku"
@@ -61,3 +133,36 @@
   order: 7
   week: 1
   source_url: https://leetcode.com/problems/valid-sudoku/
+  signature:
+    params: [{name: board, type: "string[][]"}]
+    returns: bool
+  description: |
+    判斷 9x9 數獨盤面目前已填入的格子是否有效：每一列、每一行、每個 3x3 方塊內，1-9 都不可重複。空格以 "." 表示，盤面不一定有解。
+  constraints:
+    - "board.length == 9，board[i].length == 9"
+    - "board[i][j] 是 \"1\"-\"9\" 或 \".\""
+  examples:
+    - input:
+        board:
+          - ["5","3",".",".","7",".",".",".","."]
+          - ["6",".",".","1","9","5",".",".","."]
+          - [".","9","8",".",".",".",".","6","."]
+          - ["8",".",".",".","6",".",".",".","3"]
+          - ["4",".",".","8",".","3",".",".","1"]
+          - ["7",".",".",".","2",".",".",".","6"]
+          - [".","6",".",".",".",".","2","8","."]
+          - [".",".",".","4","1","9",".",".","5"]
+          - [".",".",".",".","8",".",".","7","9"]
+      expected: true
+    - input:
+        board:
+          - ["8","3",".",".","7",".",".",".","."]
+          - ["6",".",".","1","9","5",".",".","."]
+          - [".","9","8",".",".",".",".","6","."]
+          - ["8",".",".",".","6",".",".",".","3"]
+          - ["4",".",".","8",".","3",".",".","1"]
+          - ["7",".",".",".","2",".",".",".","6"]
+          - [".","6",".",".",".",".","2","8","."]
+          - [".",".",".","4","1","9",".",".","5"]
+          - [".",".",".",".","8",".",".","7","9"]
+      expected: false
