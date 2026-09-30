@@ -12,6 +12,7 @@
 # Exit code: 0 if nothing failed, 1 if any check failed. Missing toolchains,
 # unconfigured languages and unimplemented scaffold stubs (TODO(scaffold))
 # are skipped, not failures.
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@" # re-run under bash when invoked via `sh`
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
