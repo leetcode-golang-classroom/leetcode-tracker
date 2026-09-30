@@ -13,6 +13,7 @@
 # Solutions that are skipped (no testcases, `other/`, missing toolchain,
 # unimplemented scaffold stubs containing TODO(scaffold)) do
 # not cause a failure.
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@" # re-run under bash when invoked via `sh`
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
