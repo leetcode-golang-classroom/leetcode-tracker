@@ -1,8 +1,8 @@
 # Java solutions
 
-檔名格式：`<topic-slug>/<NNNN>-<problem-slug>.java`
+路徑格式：`<topic-slug>/<NNNN>-<problem-slug>/solution.java`（每題一個資料夾，內含 `README.md` 題目說明）
 
-例如第一批 Arrays & Hashing 的 Two Sum：`arrays-hashing/0003-two-sum.java`
+例如第一批 Arrays & Hashing 的 Two Sum：`arrays-hashing/0003-two-sum/solution.java`
 
 ## 解法檔規範
 

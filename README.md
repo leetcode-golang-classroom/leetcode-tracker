@@ -2,16 +2,18 @@
 
 NeetCode 風格的多語言刷題追蹤 repo，搭配 GitHub Projects v2 看板使用。完整設計方案見對話中確認的計畫（Topic 分類、Project 欄位、Views、批次腳本）。
 
+> 想知道每題怎麼從 issue 做到驗證通過？見 [作題流程](docs/WORKFLOW.md)。
+
 ## 目錄結構
 
 ```
 leetcode-tracker/
-├── python/<topic-slug>/<NNNN>-<problem-slug>.py
-├── javascript/<topic-slug>/<NNNN>-<problem-slug>.js (or .ts)
-├── go/<topic-slug>/<NNNN>-<problem-slug>.go
-├── rust/<topic-slug>/<NNNN>-<problem-slug>.rs
-├── java/<topic-slug>/<NNNN>-<problem-slug>.java
-├── other/<lang>/<topic-slug>/<NNNN>-<problem-slug>.*
+├── python/<topic-slug>/<NNNN>-<problem-slug>/solution.py     # 每題一個資料夾，另含 README.md
+├── javascript/<topic-slug>/<NNNN>-<problem-slug>/solution.js (or .ts)
+├── go/<topic-slug>/<NNNN>-<problem-slug>/solution.go
+├── rust/<topic-slug>/<NNNN>-<problem-slug>/solution.rs
+├── java/<topic-slug>/<NNNN>-<problem-slug>/solution.java
+├── other/<lang>/<topic-slug>/<NNNN>-<problem-slug>/solution.*
 ├── problems.yaml                     # 題目主清單（source of truth，人工維護）
 ├── testcases/<NNNN>-<problem-slug>.json  # 每題的測試案例（input/expected），驗證腳本共用
 └── .github/
@@ -97,11 +99,11 @@ leetcode-tracker/
 ```
 
 放置規則：
-- 檔名的 `<NNNN>-<problem-slug>` 要對應到 `problems.yaml` 裡該題的 `id` 與 `source_url` 慣例（例如 `0003-two-sum.json` 對應 `id: "0003"`），跟解法檔案的命名方式一致，這樣 `verify-solutions.yml` 才能用檔名反查到正確的測試案例。
+- 檔名的 `<NNNN>-<problem-slug>` 要對應到 `problems.yaml` 裡該題的 `id` 與 `source_url` 慣例（例如 `0003-two-sum.json` 對應 `id: "0003"`），跟解法所在資料夾 `<NNNN>-<problem-slug>` 的名稱一致，這樣 `verify-solutions.yml` 才能用檔名反查到正確的測試案例。
 - `input` 的 key 要跟語言 runner 的呼叫慣例對上（Python 是 `solve(**kwargs)` 的參數名，Go/Rust/Java 是丟進 `input` map 後自己取值），所以同一題不同語言共用同一份 testcase 檔案即可，不用每個語言各存一份。
 - 沒有自動生成腳本，`expected` 必須手動抄自 LeetCode 題目頁面本身附的範例（通常 2–3 組），不要用自己的解法反推 expected，否則驗證會失去意義。
 
-五種語言都已經有對應的 runner，且都用 `python/arrays-hashing/0003-two-sum.*` 這題實際跑過 pass/fail 兩種情況驗證過：
+五種語言都已經有對應的 runner，且都用 `python/arrays-hashing/0003-two-sum/solution.*` 這題實際跑過 pass/fail 兩種情況驗證過：
 
 | 語言 | Runner | 呼叫方式 | 解法檔案要求 |
 |---|---|---|---|
@@ -119,7 +121,7 @@ Go/Rust/Java 都是靜態語言，沒辦法像 Python/JS 一樣真的動態載�
 **本機手動驗證一次**：
 
 ```bash
-uv run .github/scripts/run_python.py python/arrays-hashing/0003-two-sum.py testcases/0003-two-sum.json
+uv run .github/scripts/run_python.py python/arrays-hashing/0003-two-sum/solution.py testcases/0003-two-sum.json
 ```
 
 **自動化：`verify-solutions.yml`**

@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PROJECT_PAT }} # needed so the scaffold PR can trigger other workflows
 
       - uses: astral-sh/setup-uv@v3
 
@@ -41,3 +43,30 @@ jobs:
           LANGUAGES: ${{ vars.LANGUAGES }} # e.g. "python" or "python,go"
           MAX_WEEK: ${{ steps.week.outputs.week }}
         run: uv run .github/scripts/seed_problems.py problems.yaml
+
+      # Generate stubs + README + testcases for the due problems and open a PR.
+      # Existing files are never overwritten, so re-runs only add what is missing.
+      - name: Scaffold starter files
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+          LANGUAGES: ${{ vars.LANGUAGES }}
+          MAX_WEEK: ${{ steps.week.outputs.week }}
+        run: |
+          set -euo pipefail
+          uv run .github/scripts/scaffold.py problems.yaml
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "nothing to scaffold"
+            exit 0
+          fi
+          branch="scaffold/week-${MAX_WEEK}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git add -A
+          git commit -m "✨ (scaffold): week ${MAX_WEEK} starter files"
+          git push --force origin "$branch"
+          if [ -z "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ]; then
+            gh pr create --base master --head "$branch" \
+              --title "✨ (scaffold): week ${MAX_WEEK} starter files" \
+              --body "Auto-generated stubs, READMEs and testcases for week ${MAX_WEEK}. Stubs keep a \`TODO(scaffold)\` marker, so CI skips them until you implement and remove it."
+          fi

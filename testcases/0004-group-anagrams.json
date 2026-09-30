@@ -1,0 +1,5 @@
+[
+  {"input": {"strs": ["eat", "tea", "tan", "ate", "nat", "bat"]}, "expected": [["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]},
+  {"input": {"strs": [""]}, "expected": [[""]]},
+  {"input": {"strs": ["a"]}, "expected": [["a"]]}
+]

@@ -10,7 +10,8 @@
 # (committed, staged, unstaged and untracked).
 #
 # Exit code: 0 if nothing failed, 1 if any solution failed, 2 on usage errors.
-# Solutions that are skipped (no testcases, `other/`, missing toolchain) do
+# Solutions that are skipped (no testcases, `other/`, missing toolchain,
+# unimplemented scaffold stubs containing TODO(scaffold)) do
 # not cause a failure.
 set -uo pipefail
 
@@ -48,11 +49,22 @@ for file in "${files[@]}"; do
     continue
   fi
 
-  dir="${file%%/*}"
+  if grep -q 'TODO(scaffold)' "$file"; then
+    echo "SKIP  $file (unimplemented scaffold stub)"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
   base="$(basename "$file")"
-  id="${base%%-*}"
-  rest="${base#*-}"
-  slug="${rest%.*}"
+  case "$base" in
+    solution.*) ;;
+    *) continue ;; # README.md and other non-solution files in a problem folder
+  esac
+
+  dir="${file%%/*}"
+  stem="$(basename "$(dirname "$file")")" # <NNNN>-<slug>
+  id="${stem%%-*}"
+  slug="${stem#*-}"
   testcases="testcases/${id}-${slug}.json"
 
   if [ ! -f "$testcases" ]; then

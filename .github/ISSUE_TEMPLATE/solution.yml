@@ -35,6 +35,6 @@ body:
     id: code_path
     attributes:
       label: 程式碼路徑
-      placeholder: "python/arrays-hashing/0008-two-sum.py"
+      placeholder: "python/arrays-hashing/0008-two-sum/solution.py"
     validations:
       required: false

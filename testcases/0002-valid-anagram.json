@@ -1,0 +1,4 @@
+[
+  {"input": {"s": "anagram", "t": "nagaram"}, "expected": true},
+  {"input": {"s": "rat", "t": "car"}, "expected": false}
+]
