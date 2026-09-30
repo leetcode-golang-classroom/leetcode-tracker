@@ -11,6 +11,8 @@ on:
       - "javascript/**"
       - "go/**"
       - "java/**"
+      - "rust/**"
+      - ".github/scripts/run_rust.rs"
       - ".github/scripts/java_imports.py"
       - "scripts/lint.sh"
       - ".github/workflows/lint.yml"
@@ -30,6 +32,8 @@ jobs:
         with: { node-version: "22" }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "21" }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "rustfmt, clippy" }
 
       - name: Lint changed solutions
         run: scripts/lint.sh

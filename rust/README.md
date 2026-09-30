@@ -16,6 +16,10 @@
 - 不要寫 `fn main`，也不需要自己引入 `Value`。
 - 之後要支援 `ListNode`、`TreeNode` 等型別，只需在 driver 為它們補上 `FromValue` / `ToValue`。
 
+## Lint 與格式
+
+`scripts/lint.sh` 對 Rust 跑 `rustfmt --check`（設定在 `rust/rustfmt.toml`）與 `clippy`（以 `-D warnings`，任何警告都會失敗，和 driver 一起分析）。`scripts/lint.sh --fix` 只會自動格式化；clippy 的建議請自己修改。建議使用 stable toolchain，與 CI 一致。
+
 ## 驗證機制：用 trait 做型別轉換
 
 測資是 JSON，解答卻用 `Vec<i64>`、`String` 這類原生型別。Go 靠 reflection 自動轉換，Rust 沒有 reflection，所以 `run_rust.rs` 改用 **trait** 在編譯期完成轉換：

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Local lint/format check for solutions (python: ruff, javascript: biome,
-# go: gofmt + go vet, java: google-java-format + missing-import check).
-# rust/other are not configured yet and are skipped.
+# go: gofmt + go vet, java: google-java-format + missing-import check,
+# rust: rustfmt + clippy). other/ is not configured yet and is skipped.
 #
 # Usage:
 #   scripts/lint.sh [--fix] [<solution_path>...]
 #
 # With no paths, checks every solution.* file changed vs master (committed,
 # staged, unstaged, untracked). --fix applies formatting / safe lint fixes
-# (python and javascript; gofmt for go; for java, adds missing
-# JDK imports and runs google-java-format).
+# (python and javascript; gofmt for go; rustfmt for rust; for java, adds
+# missing JDK imports and runs google-java-format).
 #
 # Exit code: 0 if nothing failed, 1 if any check failed. Missing toolchains,
 # unconfigured languages and unimplemented scaffold stubs (TODO(scaffold))
@@ -58,6 +58,12 @@ go_vet() { # vet a solution together with the runner driver, as run_go.sh does
   local tmp; tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' RETURN
   cp "$SCRIPTS/run_go.go" "$tmp/driver.go"; cp "$1" "$tmp/solution.go"
   (cd "$tmp" && go vet driver.go solution.go)
+}
+
+rust_clippy() { # clippy a solution together with the runner driver, as run_rust.sh does
+  local tmp; tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' RETURN
+  SOLUTION_PATH="$(realpath "$1")" clippy-driver --edition 2021 --crate-type bin --emit=metadata \
+    --out-dir "$tmp" -D warnings "$SCRIPTS/run_rust.rs"
 }
 
 gjf_jar() { # download google-java-format once; fails if it cannot be fetched
@@ -121,6 +127,14 @@ for file in "${files[@]}"; do
         check "$file" java_fix "$file"
       else
         check "$file" java_check "$file"
+      fi ;;
+    rust)
+      command -v rustfmt >/dev/null || { skip "$file" "rustfmt not installed"; continue; }
+      if [ $fix -eq 1 ]; then rustfmt --config-path rust --edition 2021 "$file"; fi
+      check "$file" rustfmt --config-path rust --edition 2021 --check "$file"
+      if [ $fix -eq 0 ]; then
+        if command -v clippy-driver >/dev/null; then check "$file (clippy)" rust_clippy "$file"
+        else skip "$file (clippy)" "clippy not installed"; fi
       fi ;;
     *) skip "$file" "no linter configured for this language yet" ;;
   esac
