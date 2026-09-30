@@ -23,6 +23,7 @@ problems.yaml fields used (all optional except `signature` to be scaffolded):
   constraints: [list of strings]
   examples: [{input: {nums: [..], target: 9}, expected: [0, 1]}, ...]
 Types: int, float, bool, string, and any of those suffixed with [] (nested allowed).
+Rust maps them to i64, f64, bool, String, Vec<..>.
 
 Env / usage:
   LANGUAGES   comma-separated (default: python); same values as seed_problems.py
@@ -54,6 +55,7 @@ SCALARS = {
     "javascript-typescript": {"int": "number", "float": "number", "bool": "boolean", "string": "string"},
     "go": {"int": "int", "float": "float64", "bool": "bool", "string": "string"},
     "java": {"int": "int", "float": "double", "bool": "boolean", "string": "String"},
+    "rust": {"int": "i64", "float": "f64", "bool": "bool", "string": "String"},
 }
 
 
@@ -74,6 +76,8 @@ def lang_type(lang: str, t: str) -> str:
         return "list[" * depth + s + "]" * depth
     if lang == "go":
         return "[]" * depth + s
+    if lang == "rust":
+        return "Vec<" * depth + s + ">" * depth
     return s + "[]" * depth  # js (JSDoc) / java
 
 
@@ -164,16 +168,13 @@ def stub_java(p: dict) -> str:
 
 def stub_rust(p: dict) -> str:
     sig = p["signature"]
-    lines = [
-        "// Rust solutions use the driver's minimal JSON `Value` (see .github/scripts/run_rust.rs).",
-        f"// returns: {sig['returns']}",
-        "fn solve(input: &Value) -> Value {",
-        f"    // {MARKER}: implement, then delete this line",
-    ]
-    for a in sig["params"]:
-        lines.append(f"    // let {a['name']} = input.get(\"{a['name']}\"); // {a['type']}")
-    lines += ["    todo!()", "}", ""]
-    return "\n".join(lines)
+    params = ", ".join(f"{a['name']}: {lang_type('rust', a['type'])}" for a in sig["params"])
+    return (
+        f"fn solve({params}) -> {lang_type('rust', sig['returns'])} {{\n"
+        f"    // {MARKER}: implement, then delete this line\n"
+        "    todo!()\n"
+        "}\n"
+    )
 
 
 STUBS = {

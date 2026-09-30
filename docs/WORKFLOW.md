@@ -68,7 +68,7 @@ stub 內有一行 `TODO(scaffold)` 標記。開始實作時把它刪掉；還留
 - JavaScript：CommonJS，`solve({ a, b })` 解構 input，`module.exports = { solve }`。
 - Go：`package main`、`func Solve(...)`，不可有 `func main`，依參數順序對應。
 - Java：package-private `class Solution`，`static <ret> solve(...)`，依參數名稱對應。
-- Rust：`fn solve(input: &Value) -> Value`，使用 driver 內建的極簡 JSON 型別。
+- Rust：`fn solve(<參數>) -> <回傳值>`，用 owned 型別（`Vec<i64>`、`String`…），依參數順序對應。
 
 ## 5. 本地驗證
 
