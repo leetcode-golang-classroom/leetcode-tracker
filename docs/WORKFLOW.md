@@ -79,7 +79,22 @@ scripts/verify.sh go/arrays-hashing/0003-two-sum/solution.go
 
 使用與 CI 相同的 runner，但不會寫回 Project。缺少 toolchain 的語言會 SKIP；有任何 FAIL 則 exit 1，可以當 pre-push 檢查。
 
-## 6. 送出 PR
+## 6. Lint 與格式
+
+```bash
+scripts/lint.sh          # 檢查相對 master 有變更的解答
+scripts/lint.sh --fix    # 自動修正格式（Python、JS、Go）
+```
+
+| 語言 | 工具 | 設定 |
+| --- | --- | --- |
+| Python | `ruff check` + `ruff format`（透過 `uvx`） | `python/ruff.toml` |
+| JavaScript | `biome check`（固定版本，透過 `npx`） | `javascript/biome.json` |
+| Go | `gofmt` + `go vet`（和 driver 一起 vet，和 `run_go.sh` 做法相同） | 無 |
+
+Rust、Java、`other/` 目前沒有設定 linter，會顯示 SKIP。含 `TODO(scaffold)` 的 stub 也會跳過。PR 上的 `lint.yml` 跑同一支腳本，獨立於驗證 workflow，lint 失敗不會改動 Verified 欄位。
+
+## 7. 送出 PR
 
 ```bash
 git switch -c <id>-<slug>/<lang>   # 例如 0004-group-anagrams/go
@@ -91,7 +106,7 @@ gh pr create --base master
 
 PR 會觸發 `verify-solutions.yml`。它會跑 runner，把 Verified、Runtime、Memory 寫回 sub-issue 的 Project 欄位，並在 issue 留言。
 
-## 7. 重新驗證
+## 8. 重新驗證
 
 合併後想重跑某一份解答，到 Actions 頁手動觸發 `verify-solutions.yml`，填入 `solution_path`：
 
