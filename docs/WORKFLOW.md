@@ -83,7 +83,7 @@ scripts/verify.sh go/arrays-hashing/0003-two-sum/solution.go
 
 ```bash
 scripts/lint.sh          # 檢查相對 master 有變更的解答
-scripts/lint.sh --fix    # 自動修正格式（Python、JS、Go）
+scripts/lint.sh --fix    # 自動修正格式（Python、JS、Go、Java）
 ```
 
 | 語言 | 工具 | 設定 |
@@ -91,8 +91,11 @@ scripts/lint.sh --fix    # 自動修正格式（Python、JS、Go）
 | Python | `ruff check` + `ruff format`（透過 `uvx`） | `python/ruff.toml` |
 | JavaScript | `biome check`（固定版本，透過 `npx`） | `javascript/biome.json` |
 | Go | `gofmt` + `go vet`（和 driver 一起 vet，和 `run_go.sh` 做法相同） | 無 |
+| Java | 缺少 import 檢查（`.github/scripts/java_imports.py`）+ `google-java-format --aosp` | 無（jar 首次執行自動下載到 `~/.cache/leetcode-tracker/`） |
 
-Rust、Java、`other/` 目前沒有設定 linter，會顯示 SKIP。含 `TODO(scaffold)` 的 stub 也會跳過。PR 上的 `lint.yml` 跑同一支腳本，獨立於驗證 workflow，lint 失敗不會改動 Verified 欄位。
+Java 的 `--fix` 會先替常用 JDK 類別（`java.util`、`java.util.function`、`java.util.stream`）補上缺少的 `import`，再由 google-java-format 排序、移除未使用的 import 並統一格式。google-java-format 本身不會補 import，所以補 import 由 `java_imports.py` 負責；清單以外的類別要自己加。
+
+Rust、`other/` 目前沒有設定 linter，會顯示 SKIP。含 `TODO(scaffold)` 的 stub 也會跳過。PR 上的 `lint.yml` 跑同一支腳本，獨立於驗證 workflow，lint 失敗不會改動 Verified 欄位。
 
 ## 7. 送出 PR
 
