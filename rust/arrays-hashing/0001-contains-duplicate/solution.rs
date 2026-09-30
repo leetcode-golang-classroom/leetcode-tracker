@@ -1,7 +1,4 @@
-// Rust solutions use the driver's minimal JSON `Value` (see .github/scripts/run_rust.rs).
-// returns: bool
-fn solve(input: &Value) -> Value {
+fn solve(nums: Vec<i64>) -> bool {
     // TODO(scaffold): implement, then delete this line
-    // let nums = input.get("nums"); // int[]
     todo!()
 }

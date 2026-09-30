@@ -21,7 +21,7 @@
 | Python | `run_python.py`（`uv run`） | `def solve(...)`，以關鍵字參數呼叫，參數名對到 input 的 key |
 | JavaScript | `run_javascript.mjs`（`node`） | CommonJS，`solve(input)` 收整個 input 物件（解法自行解構），`module.exports = { solve }`（`.ts` 需自行 transpile 成 `.js`） |
 | Go | `run_go.go` + `run_go.sh` | `package main`，`func Solve(<原生型別參數>) <回傳值>`，不含 `func main`；依 input key 的順序對應參數順序 |
-| Rust | `run_rust.rs` + `run_rust.sh` | `fn solve(input: &Value) -> Value`（`Value` 是 runner 內建的手刻 JSON 型別） |
+| Rust | `run_rust.rs` + `run_rust.sh` | `fn solve(nums: Vec<i64>, ...) -> ...`（driver 以 `FromValue`/`ToValue` trait 轉換，依參數順序對應） |
 | Java | `Runner.java` + `run_java.sh` | 非 public 的 `class Solution`，`static <ret> solve(<原生型別參數>)`，以參數名對應 input 的 key |
 | Other | — | 尚未提供；寫一個輸出格式相同的 runner 即可接上 `record_result.py` |
 

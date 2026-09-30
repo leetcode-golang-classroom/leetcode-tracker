@@ -2,8 +2,15 @@
 // `rustc` (no Cargo/serde) via the run_rust.py wrapper, which sets the
 // SOLUTION_PATH env var and splices the solution file in at compile time.
 //
-// Convention: the solution file defines `fn solve(input: &Value) -> Value`
-// using the minimal JSON `Value` type below (no external crates needed).
+// Convention: the solution file defines `fn solve(<params...>) -> <return>`
+// with the problem's natural owned types (e.g. `fn solve(nums: Vec<i64>,
+// target: i64) -> Vec<i64>`). Rust has no reflection, so the driver converts
+// the JSON testcase to/from those types with the `FromValue` / `ToValue`
+// traits below, and calls `solve` through the `Solvable` trait, which is
+// implemented for fn items of each arity. Like Go, arguments are matched by
+// position: the keys of a testcase's "input" object must be in the same order
+// as `solve`'s parameters. New types (e.g. ListNode) only need their own
+// `FromValue` / `ToValue` impls. No external crates needed.
 #![allow(dead_code)]
 
 include!(env!("SOLUTION_PATH"));
@@ -55,6 +62,136 @@ impl Value {
     fn from_vec_i64(v: Vec<i64>) -> Value {
         Value::Arr(v.into_iter().map(Value::from_i64).collect())
     }
+}
+
+// ---- conversion between JSON `Value` and solution types ----
+
+trait FromValue {
+    fn from_value(v: &Value) -> Self;
+}
+
+trait ToValue {
+    fn to_value(self) -> Value;
+}
+
+impl FromValue for i64 {
+    fn from_value(v: &Value) -> Self {
+        v.as_i64()
+    }
+}
+impl ToValue for i64 {
+    fn to_value(self) -> Value {
+        Value::from_i64(self)
+    }
+}
+
+impl FromValue for f64 {
+    fn from_value(v: &Value) -> Self {
+        v.as_f64()
+    }
+}
+impl ToValue for f64 {
+    fn to_value(self) -> Value {
+        Value::Num(self)
+    }
+}
+
+impl FromValue for bool {
+    fn from_value(v: &Value) -> Self {
+        match v {
+            Value::Bool(b) => *b,
+            _ => panic!("expected bool"),
+        }
+    }
+}
+impl ToValue for bool {
+    fn to_value(self) -> Value {
+        Value::Bool(self)
+    }
+}
+
+impl FromValue for String {
+    fn from_value(v: &Value) -> Self {
+        match v {
+            Value::Str(s) => s.clone(),
+            _ => panic!("expected string"),
+        }
+    }
+}
+impl ToValue for String {
+    fn to_value(self) -> Value {
+        Value::Str(self)
+    }
+}
+
+impl<T: FromValue> FromValue for Vec<T> {
+    fn from_value(v: &Value) -> Self {
+        v.as_array().iter().map(T::from_value).collect()
+    }
+}
+impl<T: ToValue> ToValue for Vec<T> {
+    fn to_value(self) -> Value {
+        Value::Arr(self.into_iter().map(ToValue::to_value).collect())
+    }
+}
+
+impl<T: FromValue> FromValue for Option<T> {
+    fn from_value(v: &Value) -> Self {
+        match v {
+            Value::Null => None,
+            _ => Some(T::from_value(v)),
+        }
+    }
+}
+impl<T: ToValue> ToValue for Option<T> {
+    fn to_value(self) -> Value {
+        match self {
+            Some(x) => x.to_value(),
+            None => Value::Null,
+        }
+    }
+}
+
+// `solve` is called through this trait so the driver needn't know its arity.
+trait Solvable<Args> {
+    fn call_with(&self, args: &[Value]) -> Value;
+}
+
+macro_rules! impl_solvable {
+    ($n:expr; $($arg:ident $idx:tt),+) => {
+        impl<F, R, $($arg),+> Solvable<($($arg,)+)> for F
+        where
+            F: Fn($($arg),+) -> R,
+            R: ToValue,
+            $($arg: FromValue),+
+        {
+            fn call_with(&self, args: &[Value]) -> Value {
+                assert_eq!(
+                    args.len(),
+                    $n,
+                    "solve takes {} parameter(s) but the testcase input has {}",
+                    $n,
+                    args.len()
+                );
+                self($($arg::from_value(&args[$idx])),+).to_value()
+            }
+        }
+    };
+}
+
+impl_solvable!(1; A 0);
+impl_solvable!(2; A 0, B 1);
+impl_solvable!(3; A 0, B 1, C 2);
+impl_solvable!(4; A 0, B 1, C 2, D 3);
+impl_solvable!(5; A 0, B 1, C 2, D 3, E 4);
+impl_solvable!(6; A 0, B 1, C 2, D 3, E 4, G 5);
+
+fn call_solve(input: &Value) -> Value {
+    let args: Vec<Value> = match input {
+        Value::Obj(pairs) => pairs.iter().map(|(_, v)| v.clone()).collect(),
+        _ => panic!("\"input\" must be a JSON object"),
+    };
+    solve.call_with(&args)
 }
 
 struct Parser<'a> {
@@ -261,7 +398,7 @@ fn main() {
     for (i, case) in cases.iter().enumerate() {
         let input = case.get("input");
         let expected = case.get("expected");
-        let actual = solve(&input);
+        let actual = call_solve(&input);
         if actual != expected {
             failures.push(format!(
                 "case {}: expected {}, got {}",
