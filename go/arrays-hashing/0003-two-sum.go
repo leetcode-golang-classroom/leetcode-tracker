@@ -1,20 +1,15 @@
 package main
 
 func Solve(nums []int, target int) []int {
-	seen := make(map[int]int, len(nums))
-	result := []int{}
-	for i := range nums {
-		// 每次都先查詢補數是否有出現
-		find := target - nums[i]
-		if val, ok := seen[find]; ok {
-			if i > val {
-				return []int{val, i}
-			}
-			return []int{i, val}
+	visited := make(map[int]int)
+	for idx, num := range nums {
+		// lookup for target - num exists in the visited map
+		matchedVal := target - num
+		if matchedIdx, ok := visited[matchedVal]; ok {
+			return []int{matchedIdx, idx}
 		}
-
-		// 當補數不存在才繼續加入
-		seen[nums[i]] = i
+		// setup current value to visited map
+		visited[num] = idx
 	}
-	return result
+	return []int{}
 }
