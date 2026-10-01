@@ -12,5 +12,5 @@ fn solve(nums: Vec<i64>, target: i64) -> Vec<i64> {
 
         visited.insert(num, i as i64);
     }
-    return vec![];
+    vec![]
 }
