@@ -7,7 +7,7 @@ fn solve(nums: Vec<i64>, target: i64) -> Vec<i64> {
         let complement = target - num;
 
         if let Some(&prev_index) = visited.get(&complement) {
-            return vec![prev_index as i64, i as i64];
+            return vec![prev_index, i as i64];
         }
 
         visited.insert(num, i as i64);
