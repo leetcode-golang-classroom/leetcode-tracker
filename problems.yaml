@@ -166,3 +166,26 @@
           - [".",".",".","4","1","9",".",".","5"]
           - [".",".",".",".","8",".",".","7","9"]
       expected: false
+
+- id: "0008"
+  title: "Valid Palindrome"
+  topic: two-pointers
+  difficulty: easy
+  order: 8
+  week: 2
+  source_url: https://leetcode.com/problems/valid-palindrome/
+  signature:
+    params: [{name: s, type: string}]
+    returns: bool
+  description: |
+    將字串中所有大寫字母轉為小寫，並移除所有非英數字元後，若正著讀與反著讀相同，則稱為回文。判斷給定字串 s 是否為回文。
+  constraints:
+    - "1 <= s.length <= 2 * 10^5"
+    - "s 只包含可列印的 ASCII 字元"
+  examples:
+    - input: {s: "A man, a plan, a canal: Panama"}
+      expected: true
+    - input: {s: "race a car"}
+      expected: false
+    - input: {s: " "}
+      expected: true

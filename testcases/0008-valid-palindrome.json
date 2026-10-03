@@ -1,0 +1,5 @@
+[
+  {"input": {"s": "A man, a plan, a canal: Panama"}, "expected": true},
+  {"input": {"s": "race a car"}, "expected": false},
+  {"input": {"s": " "}, "expected": true}
+]
