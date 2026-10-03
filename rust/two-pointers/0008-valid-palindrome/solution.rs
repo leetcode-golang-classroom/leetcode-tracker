@@ -20,7 +20,7 @@ fn solve(s: String) -> bool {
         }
 
         // 確認兩個數值字串是否不相同
-        if chars[lp].to_ascii_uppercase() != chars[rp - 1].to_ascii_uppercase() {
+        if !chars[lp].eq_ignore_ascii_case(&chars[rp-1]){
             return false;
         }
 
