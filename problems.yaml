@@ -189,3 +189,48 @@
       expected: false
     - input: {s: " "}
       expected: true
+
+- id: "0009"
+  title: "Spiral Matrix"
+  topic: math-geometry
+  difficulty: medium
+  order: 9
+  week: 2
+  source_url: https://leetcode.com/problems/spiral-matrix/
+  signature:
+    params: [{name: matrix, type: "int[][]"}]
+    returns: "int[]"
+  description: |
+    給定一個 m x n 的矩陣 matrix，請依照順時針螺旋的順序，回傳矩陣中的所有元素。
+  constraints:
+    - "m == matrix.length"
+    - "n == matrix[i].length"
+    - "1 <= m, n <= 10"
+    - "-100 <= matrix[i][j] <= 100"
+  examples:
+    - input:
+        matrix:
+          - [1,2,3]
+          - [4,5,6]
+          - [7,8,9]
+      expected: [1,2,3,6,9,8,7,4,5]
+    - input:
+        matrix:
+          - [1,2,3,4]
+          - [5,6,7,8]
+          - [9,10,11,12]
+      expected: [1,2,3,4,8,12,11,10,9,5,6,7]
+    - input:
+        matrix:
+          - [1]
+      expected: [1]
+    - input:
+        matrix:
+          - [1,2,3]
+      expected: [1,2,3]
+    - input:
+        matrix:
+          - [1]
+          - [2]
+          - [3]
+      expected: [1,2,3]

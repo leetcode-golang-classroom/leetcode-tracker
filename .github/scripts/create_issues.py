@@ -9,7 +9,7 @@ Everything variable (title/topic/difficulty) is read from problems.yaml by id;
 only --id and --languages are parameters. Skips issues that already exist.
 
 Usage:
-  uv run .github/scripts/create_issues.py --id 0008 --languages python,go,rust,java
+  uv run .github/scripts/create_issues.py --id 0008 --languages python,go,rust,java,javascript-typescript
 """
 from __future__ import annotations
 
@@ -19,9 +19,10 @@ import subprocess
 
 import yaml
 
-LANG_LABEL = {"javascript": "lang:javascript-typescript", "typescript": "lang:javascript-typescript"}
-SOLUTION_FILE = {"python": "solution.py", "go": "solution.go", "rust": "solution.rs",
-                 "java": "Solution.java", "javascript": "solution.js"}
+# issue-title language -> (folder, solution file); same keys as scaffold.py LANG_DIR_EXT
+LANG_DIR_FILE = {"python": ("python", "solution.py"), "go": ("go", "solution.go"),
+                 "rust": ("rust", "solution.rs"), "java": ("java", "solution.java"),
+                 "javascript-typescript": ("javascript", "solution.js")}
 
 
 def gh(*args: str) -> str:
@@ -63,8 +64,9 @@ def main() -> None:
                     f"LeetCode: {p.get('source_url', '')}\n\nWeek {p['week']} · testcases/{p['id']}-{slug}.json")
     for lang in a.languages.split(","):
         sub = ensure(repo, f"[{p['id']}][{lang}] {p['title']}",
-                     f"type:solution,{LANG_LABEL.get(lang, f'lang:{lang}')}",
-                     f"Implement `{lang}/{folder}/{SOLUTION_FILE.get(lang, 'solution')}` "
+                     f"type:solution,lang:{lang}",
+                     f"Implement `{LANG_DIR_FILE.get(lang, (lang, 'solution'))[0]}/{folder}/"
+                     f"{LANG_DIR_FILE.get(lang, (lang, 'solution'))[1]}` "
                      f"(see README.md there). Remove the `TODO(scaffold)` marker when done and run `scripts/verify.sh`.")
         subprocess.run(["gh", "api", f"repos/{repo}/issues/{parent['number']}/sub_issues",
                         "-F", f"sub_issue_id={sub['id']}"], capture_output=True)

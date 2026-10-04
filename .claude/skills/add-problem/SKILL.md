@@ -16,7 +16,7 @@ Shared steps are fixed; only the parameters below vary. Ask (AskUserQuestion) on
 | `TOPIC` | folder/topic label (e.g. `two-pointers`, `arrays-hashing`) | infer from problem; reuse existing topics in problems.yaml |
 | `DIFFICULTY` | easy / medium / hard | from LeetCode |
 | `WEEK` | study week | ask; suggest the week of neighbouring problems |
-| `LANGUAGES` | comma list | `python,go,rust,java` (javascript has no stub template in scaffold.py — skip it and tell the user) |
+| `LANGUAGES` | comma list | `python,go,rust,java,javascript-typescript` (use the full name `javascript-typescript`; folder is `javascript/`, file `solution.js`) |
 | `ISSUES` | whether to create issues | yes |
 
 ## Steps (in order, from repo root)
