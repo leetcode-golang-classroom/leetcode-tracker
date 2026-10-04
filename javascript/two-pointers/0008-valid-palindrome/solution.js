@@ -23,11 +23,11 @@ function solve({ s = "" }) {
   return true;
 }
 
-function isAlphaNum(c=0) {
+function isAlphaNum(c = 0) {
   return (
-    (c >= 'a'.charCodeAt(0) && c <= 'z'.charCodeAt(0)) ||
-    (c >= 'A'.charCodeAt(0) && c <= 'Z'.charCodeAt(0)) ||
-    (c >= '0'.charCodeAt(0) && c <= '9'.charCodeAt(0))
+    (c >= "a".charCodeAt(0) && c <= "z".charCodeAt(0)) ||
+    (c >= "A".charCodeAt(0) && c <= "Z".charCodeAt(0)) ||
+    (c >= "0".charCodeAt(0) && c <= "9".charCodeAt(0))
   );
 }
 module.exports = { solve };
