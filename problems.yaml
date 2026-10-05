@@ -234,3 +234,47 @@
           - [2]
           - [3]
       expected: [1,2,3]
+
+- id: "0010"
+  title: "Number of Connected Components in an Undirected Graph"
+  topic: graphs
+  difficulty: medium
+  order: 10
+  week: 2
+  source_url: https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+  signature:
+    params: [{name: n, type: int}, {name: edges, type: "int[][]"}]
+    returns: int
+  description: |
+    給定 n 個節點（編號 0 到 n - 1）與一個陣列 edges，其中 edges[i] = [a, b] 表示節點 a 與 b 之間有一條無向邊。請回傳此圖中連通元件（connected components）的數量。
+  constraints:
+    - "1 <= n <= 2000"
+    - "1 <= edges.length <= 5000"
+    - "edges[i].length == 2"
+    - "0 <= a, b < n"
+    - "a != b"
+    - "不會有重複的邊"
+  examples:
+    - input:
+        n: 5
+        edges:
+          - [0,1]
+          - [1,2]
+          - [3,4]
+      expected: 2
+    - input:
+        n: 5
+        edges:
+          - [0,1]
+          - [1,2]
+          - [2,3]
+          - [3,4]
+      expected: 1
+    - input:
+        n: 4
+        edges: []
+      expected: 4
+    - input:
+        n: 1
+        edges: []
+      expected: 1
