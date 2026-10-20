@@ -278,3 +278,156 @@
         n: 1
         edges: []
       expected: 1
+
+- id: "0011"
+  title: "Longest Consecutive Sequence"
+  topic: arrays-hashing
+  difficulty: medium
+  order: 11
+  week: 3
+  source_url: https://leetcode.com/problems/longest-consecutive-sequence/
+  signature:
+    params: [{name: nums, type: "int[]"}]
+    returns: int
+  description: |
+    給定一個未排序的整數陣列 nums，回傳最長連續元素序列的長度。請設計時間複雜度為 O(n) 的演算法。
+  constraints:
+    - "0 <= nums.length <= 10^5"
+    - "-10^9 <= nums[i] <= 10^9"
+  examples:
+    - {input: {nums: [100, 4, 200, 1, 3, 2]}, expected: 4}
+    - {input: {nums: [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]}, expected: 9}
+    - {input: {nums: [1, 0, 1, 2]}, expected: 3}
+    - {input: {nums: []}, expected: 0}
+    - {input: {nums: [5]}, expected: 1}
+
+- id: "0012"
+  title: "Two Sum II - Input Array Is Sorted"
+  topic: two-pointers
+  difficulty: medium
+  order: 12
+  week: 3
+  source_url: https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
+  signature:
+    params: [{name: numbers, type: "int[]"}, {name: target, type: int}]
+    returns: "int[]"
+  description: |
+    給定一個已依非遞減順序排序、索引從 1 開始的整數陣列 numbers，找出兩個相加等於 target 的數字，並回傳它們的索引 [index1, index2]（1 <= index1 < index2）。保證恰有一組解，且不可重複使用同一個元素，解法只能使用常數額外空間。
+  constraints:
+    - "2 <= numbers.length <= 3 * 10^4"
+    - "-1000 <= numbers[i] <= 1000"
+    - "numbers 以非遞減順序排序"
+    - "-1000 <= target <= 1000"
+    - "保證恰有一組解"
+  examples:
+    - {input: {numbers: [2, 7, 11, 15], target: 9}, expected: [1, 2]}
+    - {input: {numbers: [2, 3, 4], target: 6}, expected: [1, 3]}
+    - {input: {numbers: [-1, 0], target: -1}, expected: [1, 2]}
+    - {input: {numbers: [1, 2, 3, 4, 4, 9, 56, 90], target: 8}, expected: [4, 5]}
+
+- id: "0013"
+  title: "3Sum"
+  topic: two-pointers
+  difficulty: medium
+  order: 13
+  week: 3
+  source_url: https://leetcode.com/problems/3sum/
+  signature:
+    params: [{name: nums, type: "int[]"}]
+    returns: "int[][]"
+  description: |
+    給定整數陣列 nums，回傳所有滿足 i、j、k 互不相同且 nums[i] + nums[j] + nums[k] == 0 的三元組 [nums[i], nums[j], nums[k]]。答案中不可包含重複的三元組。為了讓測試可比對，回傳結果中每個三元組內部由小到大排序，且三元組之間依字典序由小到大排序。
+  constraints:
+    - "3 <= nums.length <= 3000"
+    - "-10^5 <= nums[i] <= 10^5"
+  examples:
+    - {input: {nums: [-1, 0, 1, 2, -1, -4]}, expected: [[-1, -1, 2], [-1, 0, 1]]}
+    - {input: {nums: [0, 1, 1]}, expected: []}
+    - {input: {nums: [0, 0, 0]}, expected: [[0, 0, 0]]}
+    - {input: {nums: [0, 0, 0, 0]}, expected: [[0, 0, 0]]}
+
+- id: "0014"
+  title: "Container With Most Water"
+  topic: two-pointers
+  difficulty: medium
+  order: 14
+  week: 3
+  source_url: https://leetcode.com/problems/container-with-most-water/
+  signature:
+    params: [{name: height, type: "int[]"}]
+    returns: int
+  description: |
+    給定長度為 n 的整數陣列 height，第 i 條垂直線的兩個端點為 (i, 0) 與 (i, height[i])。請找出兩條線，使它們與 x 軸共同構成的容器能裝最多的水，並回傳最大水量。容器不可傾斜。
+  constraints:
+    - "n == height.length"
+    - "2 <= n <= 10^5"
+    - "0 <= height[i] <= 10^4"
+  examples:
+    - {input: {height: [1, 8, 6, 2, 5, 4, 8, 3, 7]}, expected: 49}
+    - {input: {height: [1, 1]}, expected: 1}
+    - {input: {height: [0, 0]}, expected: 0}
+    - {input: {height: [2, 3, 4, 5, 18, 17, 6]}, expected: 17}
+
+- id: "0015"
+  title: "Trapping Rain Water"
+  topic: two-pointers
+  difficulty: hard
+  order: 15
+  week: 3
+  source_url: https://leetcode.com/problems/trapping-rain-water/
+  signature:
+    params: [{name: height, type: "int[]"}]
+    returns: int
+  description: |
+    給定 n 個非負整數代表一張高度圖，每個柱子寬度為 1。請計算下雨後這張圖最多能接住多少單位的雨水。
+  constraints:
+    - "n == height.length"
+    - "1 <= n <= 2 * 10^4"
+    - "0 <= height[i] <= 10^5"
+  examples:
+    - {input: {height: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]}, expected: 6}
+    - {input: {height: [4, 2, 0, 3, 2, 5]}, expected: 9}
+    - {input: {height: [1]}, expected: 0}
+    - {input: {height: [3, 2, 1]}, expected: 0}
+
+- id: "0016"
+  title: "Best Time to Buy and Sell Stock"
+  topic: sliding-window
+  difficulty: easy
+  order: 16
+  week: 3
+  source_url: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+  signature:
+    params: [{name: prices, type: "int[]"}]
+    returns: int
+  description: |
+    給定陣列 prices，其中 prices[i] 是某支股票第 i 天的價格。你只能選擇某一天買入、並在之後的另一天賣出，請回傳能獲得的最大利潤；若無法獲利則回傳 0。
+  constraints:
+    - "1 <= prices.length <= 10^5"
+    - "0 <= prices[i] <= 10^4"
+  examples:
+    - {input: {prices: [7, 1, 5, 3, 6, 4]}, expected: 5}
+    - {input: {prices: [7, 6, 4, 3, 1]}, expected: 0}
+    - {input: {prices: [5]}, expected: 0}
+    - {input: {prices: [2, 4, 1]}, expected: 2}
+
+- id: "0017"
+  title: "Longest Substring Without Repeating Characters"
+  topic: sliding-window
+  difficulty: medium
+  order: 17
+  week: 3
+  source_url: https://leetcode.com/problems/longest-substring-without-repeating-characters/
+  signature:
+    params: [{name: s, type: string}]
+    returns: int
+  description: |
+    給定字串 s，請找出不含重複字元的最長子字串，並回傳其長度。
+  constraints:
+    - "0 <= s.length <= 5 * 10^4"
+    - "s 由英文字母、數字、符號與空白組成"
+  examples:
+    - {input: {s: "abcabcbb"}, expected: 3}
+    - {input: {s: "bbbbb"}, expected: 1}
+    - {input: {s: "pwwkew"}, expected: 3}
+    - {input: {s: ""}, expected: 0}
